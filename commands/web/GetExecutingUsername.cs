@@ -1,7 +1,6 @@
-﻿using MoarUtils.commands.logging;
-using System;
+﻿using System;
 using System.Threading;
-
+using MoarUtils.commands.logging;
 namespace MoarUtils.commands.web {
   public class GetExecutingUsername {
     public static string Execute() {

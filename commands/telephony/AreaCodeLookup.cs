@@ -1,24 +1,18 @@
-﻿using MoarUtils.Model;
-using MoarUtils.commands.logging;
-using MoarUtils.Utils.Geography;
-using Newtonsoft.Json.Linq;
-using PhoneNumbers;
-using RestSharp;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
-
+using MoarUtils.commands.logging;
+using MoarUtils.models.commands;
+using PhoneNumbers;
 namespace MoarUtils.Utils.Telephony {
   public class AreaCodeLookup {
     #region Local List
-    private static Mutex m = new Mutex();
+    private static Mutex request = new Mutex();
     private static List<AreaCode> _loac = null;
     public static List<AreaCode> loac {
       get {
-        lock (m) {
+        lock (request) {
           //if we have some and then are <3days old, then return them
           if (_loac == null) {
             //else, get new
@@ -47,7 +41,7 @@ namespace MoarUtils.Utils.Telephony {
         return null;
       }
     }
-//this does not return state name... wonder why ic ommited
+    //this does not return state name... wonder why ic ommited
     public static string GetStateName(string areaCode) {
       try {
         return loacUsCa.Where(ac => ac.numberCode == areaCode).Select(ac => ac.stateCode).FirstOrDefault();
@@ -85,7 +79,7 @@ namespace MoarUtils.Utils.Telephony {
     }
 
     public static string GetAreaCode(PhoneNumber pn) {
-      var pnu = PhoneNumberUtil.GetInstance();      
+      var pnu = PhoneNumberUtil.GetInstance();
       var nationalSignificantNumber = pnu.GetNationalSignificantNumber(pn);
       String areaCode;
       String subscriberNumber;

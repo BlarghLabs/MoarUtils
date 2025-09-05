@@ -5,12 +5,12 @@ namespace MoarUtils.commands.web {
     public static bool Execute(
       IPrincipal ip
     ) {
-      //ip?.Identity?.Name ?? ""
+      //ip?.Identity?.Name
       var result =
         (ip == null)
         || (ip.Identity == null)
         || !ip.Identity.IsAuthenticated
-        || string.IsNullOrEmpty(ip.Identity.Name);
+        || string.IsNullOrWhiteSpace(ip.Identity.Name);
       return result;
     }
 

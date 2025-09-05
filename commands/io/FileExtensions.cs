@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.IO;
-using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace MoarUtils.Utils.IO {
   public class FileExtensions {
@@ -32,7 +31,7 @@ namespace MoarUtils.Utils.IO {
         ".mp2",
         ".mpeg",
         ".mpe",
-        ".mpv", 
+        ".mpv",
         ".mpg",
         ".mpeg",
         ".m2v",

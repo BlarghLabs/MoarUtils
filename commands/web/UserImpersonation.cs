@@ -69,7 +69,7 @@ namespace MoarUtils.commands.web {
 
       // Get data from auth ticket
       var formsIdentity = (FormsIdentity)context.User.Identity;
-      if (string.IsNullOrEmpty(formsIdentity.Ticket.UserData))
+      if (string.IsNullOrWhiteSpace(formsIdentity.Ticket.UserData))
         return null;
       if (!Deserialize(formsIdentity.Ticket.UserData, out string strUserName, out string strReturnUrl))
         return null;
@@ -77,7 +77,7 @@ namespace MoarUtils.commands.web {
       // Set new auth cookie and redirect user if asked to do so.
       FormsAuthentication.SetAuthCookie(strUserName, false);
       if (
-        !string.IsNullOrEmpty(strReturnUrl)
+        !string.IsNullOrWhiteSpace(strReturnUrl)
         && redirect
       ) {
         context.Response.Redirect(strReturnUrl);
@@ -104,7 +104,7 @@ namespace MoarUtils.commands.web {
 
         // Get data from auth ticket
         var formsIdentity = (FormsIdentity)context.User.Identity;
-        if (string.IsNullOrEmpty(formsIdentity.Ticket.UserData))
+        if (string.IsNullOrWhiteSpace(formsIdentity.Ticket.UserData))
           return string.Empty;
         if (!Deserialize(formsIdentity.Ticket.UserData, out string strUserName, out string strReturnUrl))
           return string.Empty;
@@ -131,7 +131,7 @@ namespace MoarUtils.commands.web {
 
         // Get data from auth ticket
         var formsIdentity = (FormsIdentity)context.User.Identity;
-        if (string.IsNullOrEmpty(formsIdentity.Ticket.UserData))
+        if (string.IsNullOrWhiteSpace(formsIdentity.Ticket.UserData))
           return false;
         return Deserialize(formsIdentity.Ticket.UserData, out string strUserName, out string strReturnUrl);
       }

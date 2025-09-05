@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace MoarUtils.Utils.random {
-  public class RandomStrings{
+  public class RandomStrings {
     private static Random r = new Random();
     public static string GetRandomLetter() {
       // This method returns a random lowercase letter.

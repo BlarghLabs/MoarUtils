@@ -1,5 +1,4 @@
-﻿using System.IO.Compression;
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
 
 namespace MoarUtils.filters {
@@ -27,7 +26,7 @@ namespace MoarUtils.filters {
     /// <returns></returns>
     public static bool IsGZipSupported() {
       string AcceptEncoding = HttpContext.Current.Request.Headers["Accept-Encoding"];
-      if (!string.IsNullOrEmpty(AcceptEncoding) &&
+      if (!string.IsNullOrWhiteSpace(AcceptEncoding) &&
               (AcceptEncoding.Contains("gzip") || AcceptEncoding.Contains("deflate")))
         return true;
       return false;

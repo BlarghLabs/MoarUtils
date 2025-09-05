@@ -90,7 +90,7 @@ namespace MoarUtils.Utils.Auth {
         throw new ArgumentNullException("hashAlgorithm");
       }
 
-      if (string.IsNullOrEmpty(data)) {
+      if (string.IsNullOrWhiteSpace(data)) {
         throw new ArgumentNullException("data");
       }
 
@@ -112,10 +112,10 @@ namespace MoarUtils.Utils.Auth {
 
       List<QueryParameter> result = new List<QueryParameter>();
 
-      if (!string.IsNullOrEmpty(parameters)) {
+      if (!string.IsNullOrWhiteSpace(parameters)) {
         string[] p = parameters.Split('&');
         foreach (string s in p) {
-          if (!string.IsNullOrEmpty(s) && !s.StartsWith(OAuthParameterPrefix)) {
+          if (!string.IsNullOrWhiteSpace(s) && !s.StartsWith(OAuthParameterPrefix)) {
             if (s.IndexOf('=') > -1) {
               string[] temp = s.Split('=');
               result.Add(new QueryParameter(temp[0], temp[1]));
@@ -188,15 +188,15 @@ namespace MoarUtils.Utils.Auth {
         tokenSecret = string.Empty;
       }
 
-      if (string.IsNullOrEmpty(consumerKey)) {
+      if (string.IsNullOrWhiteSpace(consumerKey)) {
         throw new ArgumentNullException("consumerKey");
       }
 
-      if (string.IsNullOrEmpty(httpMethod)) {
+      if (string.IsNullOrWhiteSpace(httpMethod)) {
         throw new ArgumentNullException("httpMethod");
       }
 
-      if (string.IsNullOrEmpty(signatureType)) {
+      if (string.IsNullOrWhiteSpace(signatureType)) {
         throw new ArgumentNullException("signatureType");
       }
 
@@ -210,7 +210,7 @@ namespace MoarUtils.Utils.Auth {
       parameters.Add(new QueryParameter(OAuthSignatureMethodKey, signatureType));
       parameters.Add(new QueryParameter(OAuthConsumerKeyKey, consumerKey));
 
-      if (!string.IsNullOrEmpty(token)) {
+      if (!string.IsNullOrWhiteSpace(token)) {
         parameters.Add(new QueryParameter(OAuthTokenKey, token));
       }
 
@@ -277,7 +277,7 @@ namespace MoarUtils.Utils.Auth {
           string signatureBase = GenerateSignatureBase(url, consumerKey, token, tokenSecret, httpMethod, timeStamp, nonce, HMACSHA1SignatureType, out normalizedUrl, out normalizedRequestParameters);
 
           HMACSHA1 hmacsha1 = new HMACSHA1();
-          hmacsha1.Key = Encoding.ASCII.GetBytes(string.Format("{0}&{1}", UrlEncode(consumerSecret), string.IsNullOrEmpty(tokenSecret) ? "" : UrlEncode(tokenSecret)));
+          hmacsha1.Key = Encoding.ASCII.GetBytes(string.Format("{0}&{1}", UrlEncode(consumerSecret), string.IsNullOrWhiteSpace(tokenSecret) ? "" : UrlEncode(tokenSecret)));
 
           return GenerateSignatureUsingHash(signatureBase, hmacsha1);
         case SignatureTypes.RSASHA1:

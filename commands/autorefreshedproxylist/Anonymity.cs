@@ -1,9 +1,8 @@
-﻿using MoarUtils.commands.logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-
+using MoarUtils.commands.logging;
 namespace MoarUtils.Utils.AutoRefreshedProxyList {
   public class Anonymity {
     #region Usable Web Proxies

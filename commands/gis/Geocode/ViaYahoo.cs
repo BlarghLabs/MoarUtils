@@ -1,11 +1,11 @@
-using MoarUtils.commands.strings;
-using MoarUtils.enums;
-using MoarUtils.Model;
-using MoarUtils.commands.logging;
-using RestSharp;
 using System;
 using System.Net;
 using System.Web;
+using MoarUtils.commands.logging;
+using MoarUtils.commands.strings;
+using MoarUtils.enums;
+using MoarUtils.models.gis;
+using RestSharp;
 
 
 //http://developer.yahoo.com/boss/geo/docs/free_YQL.html
@@ -23,8 +23,8 @@ using System.Web;
 namespace moarutils.utils.gis.geocode {
   public class ViaYahoo {
     public static Coordinate Execute(string location, WebProxy wp = null) {
-      var c = new Coordinate { g = Geocoder.Yahoo };
-      if (!string.IsNullOrEmpty(location)) {
+      var c = new Coordinate { geocoder = Geocoder.Yahoo };
+      if (!string.IsNullOrWhiteSpace(location)) {
         c = QueryYahoo(location, wp);
       }
       return c;
@@ -43,7 +43,7 @@ namespace moarutils.utils.gis.geocode {
 
       // Build sUrl request to be sent to Yahoo!
       string locationUrl = "";
-      if (!String.IsNullOrEmpty(location)) {
+      if (!String.IsNullOrWhiteSpace(location)) {
         locationUrl = "v1/public/yql?q=select%20*%20from%20geo.placefinder%20where%20text%3D%22" + CondenseWhiteSpace.Execute(HttpUtility.UrlEncode(location.Replace("+", " "))) + "%22&format=json";
       }
       return locationUrl;
@@ -88,8 +88,8 @@ namespace moarutils.utils.gis.geocode {
 
         //what to do if more than one result?
         if (json.query.count.Value < 1) {
-          return new Coordinate { g = Geocoder.Yahoo, precision = "NO RESULTS" };
-        } else { 
+          return new Coordinate { geocoder = Geocoder.Yahoo, precision = "NO RESULTS" };
+        } else {
 
           //check for error messages?
           var yr = new YahooApiGeocoderResult {
@@ -100,13 +100,13 @@ namespace moarutils.utils.gis.geocode {
 
           //convert it
           var c = new Coordinate {
-            g = Geocoder.Yahoo,
+            geocoder = Geocoder.Yahoo,
             lat = Decimal.Parse(yr.latitude, System.Globalization.NumberStyles.Float),
             lng = Decimal.Parse(yr.longitude, System.Globalization.NumberStyles.Float),
             precision = yr.quality
           };
           return c;
-        } 
+        }
       } catch (Exception ex) {
         //error = true;
         LogIt.W(location);

@@ -1,9 +1,8 @@
-﻿using MoarUtils.commands.logging;
-using RestSharp;
-using System;
+﻿using System;
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using MoarUtils.commands.logging;
+using RestSharp;
 
 namespace MoarUtils.Utils.Slack {
   public class PublishToChannel {
@@ -42,7 +41,7 @@ namespace MoarUtils.Utils.Slack {
       try {
         //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
-        var h = "----------" + (string.IsNullOrEmpty(header) ? DEFAULT_HEADER : header.ToUpper()) + "----------" + "\n";
+        var h = "----------" + (string.IsNullOrWhiteSpace(header) ? DEFAULT_HEADER : header.ToUpper()) + "----------" + "\n";
         var client = new RestClient(BASE);
         //client.ClientCertificates = new X509CertificateCollection() { certificate };
 

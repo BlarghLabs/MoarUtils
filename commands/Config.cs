@@ -1,6 +1,6 @@
-﻿using MoarUtils.commands.logging;
-using System;
+﻿using System;
 using System.Configuration;
+using MoarUtils.commands.logging;
 using static MoarUtils.commands.logging.LogIt;
 
 namespace MoarUtils.Utils {
@@ -17,7 +17,7 @@ namespace MoarUtils.Utils {
       try {
         //those required
         //CHILKAT_EMAIL_KEY = GetRequiredConfigValue("CHILKAT_EMAIL_KEY");
-        
+
         //those not required: 
         CHILKAT_EMAIL_KEY = ConfigurationManager.AppSettings["CHILKAT_EMAIL_KEY"];
       } catch (Exception ex) {
@@ -38,7 +38,7 @@ namespace MoarUtils.Utils {
       var value = "";
       try {
         value = ConfigurationManager.AppSettings[key];
-        if (String.IsNullOrEmpty(value)) {
+        if (String.IsNullOrWhiteSpace(value)) {
           LogIt.Log("Config value was null: " + key, Severity.Error);
           throw new Exception("Config value was null: " + key);
         }

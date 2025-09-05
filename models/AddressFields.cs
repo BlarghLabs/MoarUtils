@@ -1,18 +1,18 @@
 
 
-namespace MoarUtils.Model {
+namespace MoarUtils.models.gis {
+
   public class AddressFields {
-    public AddressFields() { }
+    public string line1 { get; set; }
+    public string line2 { get; set; }
+    public string street { get; set; }
+    public string postal { get; set; }
 
-    public string line1 = "";
-    public string street = "";
-    public string postal = ""; 
-    
-    public string city = ""; 
-    
-    public string state = ""; 
-    public string statecode = ""; 
+    public string city { get; set; }
 
-    public string countrycode = ""; 
+    public string state { get; set; }
+    public string statecode { get; set; }
+
+    public string countrycode { get; set; }
   }
 }

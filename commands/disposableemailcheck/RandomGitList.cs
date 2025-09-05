@@ -1,11 +1,10 @@
-﻿using MoarUtils.commands.logging;
-using Newtonsoft.Json.Linq;
-using RestSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-
+using MoarUtils.commands.logging;
+using Newtonsoft.Json.Linq;
+using RestSharp;
 namespace MoarUtils.Utils.DisposableEmailCheck {
   public class RandomGitList {
     #region Local List

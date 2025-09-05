@@ -1,6 +1,6 @@
-﻿using MoarUtils.commands.logging;
-using System;
+﻿using System;
 using System.Web;
+using MoarUtils.commands.logging;
 
 namespace MoarUtils.commands.web {
   public class GetUserAgent {

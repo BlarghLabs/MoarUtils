@@ -15,7 +15,7 @@ namespace MoarUtils.Utils.random {
 
       // Don't exceed the array's length.
       if (num_values >= values.Count)
-        num_values = values.Count- 1;
+        num_values = values.Count - 1;
 
       // Make an array of indexes 0 through values.Length - 1.
       int[] indexes =

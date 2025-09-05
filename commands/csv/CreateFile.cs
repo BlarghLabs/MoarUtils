@@ -1,8 +1,8 @@
-﻿using MoarUtils.commands.logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MoarUtils.commands.logging;
 
 namespace MoarUtils.commands.csv {
   public class CreateFile {
@@ -17,7 +17,7 @@ namespace MoarUtils.commands.csv {
                       .Select(v => StringToCSVCell(
                         ((v == null) ? "" : v.ToString())
                       ))
-                      .Select(m => m.Substring(m.IndexOf("get_") + 4).Replace("()", ""));
+                      .Select(request => request.Substring(request.IndexOf("get_") + 4).Replace("()", ""));
           result.AppendLine(string.Join(",", methods));
         }
 

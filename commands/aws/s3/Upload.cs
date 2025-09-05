@@ -1,10 +1,10 @@
-﻿using Amazon;
+﻿using System;
+using System.IO;
+using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using MoarUtils.commands.logging;
-using System;
-using System.IO;
 
 namespace MoarUtils.Utils.AWS.S3 {
   public class Upload {

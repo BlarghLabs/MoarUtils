@@ -1,8 +1,8 @@
-﻿using MoarUtils.commands.logging;
-using System;
+﻿using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using MoarUtils.commands.logging;
 
 namespace MoarUtils.commands.hashing {
   public class GetSha1 {

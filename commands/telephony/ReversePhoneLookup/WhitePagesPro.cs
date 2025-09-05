@@ -1,8 +1,8 @@
-﻿using MoarUtils.commands.logging;
+﻿using System;
+using System.Net;
+using MoarUtils.commands.logging;
 using Newtonsoft.Json;
 using RestSharp;
-using System;
-using System.Net;
 
 namespace MoarUtils.Utils.Telephony.ReversePhoneLookup {
   public class WhitePagesPro {

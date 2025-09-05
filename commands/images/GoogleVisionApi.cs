@@ -1,11 +1,11 @@
-﻿using Google.Apis.Auth.OAuth2;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Vision.v1;
 using Google.Apis.Vision.v1.Data;
 using MoarUtils.commands.logging;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 
 namespace MoarUtils.Utils.images {
   public class GoogleVisionApi {
@@ -19,7 +19,7 @@ namespace MoarUtils.Utils.images {
 
       try {
         var vs = GetVisionServiceByServiceAccount(
-          googe_service_account_json: googe_service_account_json, 
+          googe_service_account_json: googe_service_account_json,
           applicationName: applicationName
 
         );
@@ -67,12 +67,12 @@ namespace MoarUtils.Utils.images {
           new BatchAnnotateImagesRequest {
             Requests = new[] {
                     new AnnotateImageRequest() {
-                        Features = new [] { 
-                        new Feature { 
+                        Features = new [] {
+                        new Feature {
                           Type = "LABEL_DETECTION"
                         }},
-                        Image = new Image { 
-                          Content = base64Image 
+                        Image = new Image {
+                          Content = base64Image
                         }
                     }
                }
@@ -82,7 +82,7 @@ namespace MoarUtils.Utils.images {
 
     private static VisionService GetVisionServiceByServiceAccount(
       string googe_service_account_json,
-      string applicationName 
+      string applicationName
     ) {
       string[] scopes = new string[] { VisionService.Scope.CloudPlatform }; // Put your scopes here
       using (var s = Streams.GenerateStreamFromString(googe_service_account_json)) {

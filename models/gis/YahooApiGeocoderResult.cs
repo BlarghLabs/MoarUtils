@@ -1,6 +1,6 @@
 
 
-namespace MoarUtils.Model {
+namespace MoarUtils.models.gis {
   public class YahooApiGeocoderResult {
 
     public string quality; //": "60",

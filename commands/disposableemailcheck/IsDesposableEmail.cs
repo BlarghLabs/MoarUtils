@@ -1,12 +1,12 @@
-﻿using MoarUtils.commands.logging;
+﻿using System;
+using MoarUtils.commands.logging;
 using RestSharp;
-using System;
 
 namespace MoarUtils.Utils.DisposableEmailCheck {
   public class BlockDisposableEmail {
     public static bool IsDisposable(string email, string apiKey) {
       try {
-        var client = new RestClient (new RestClientOptions{
+        var client = new RestClient(new RestClientOptions {
           BaseUrl = new Uri("http://check.block-disposable-email.com/"),
           MaxTimeout = 5000
           //Timeout = 5000

@@ -1,11 +1,11 @@
-﻿using Amazon;
+﻿using System;
+using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
 using MoarUtils.commands.logging;
-using System;
 
 namespace MoarUtils.Utils.AWS.S3 {
-  public class UpdateContentType{
+  public class UpdateContentType {
     public static bool Execute(
       string AWSAccessKey,
       string AWSSecretKey,

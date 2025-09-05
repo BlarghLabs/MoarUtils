@@ -1,8 +1,7 @@
 
 
-namespace MoarUtils.Model {
+namespace MoarUtils.models.gis {
   public class YahooAddressFinderResult {
-    public YahooAddressFinderResult() { }
 
     public int Error = -1; //0
     public string ErrorMessage = ""; //No error

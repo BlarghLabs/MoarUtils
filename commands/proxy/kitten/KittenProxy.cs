@@ -1,18 +1,18 @@
-﻿using MoarUtils.commands.logging;
-using RestSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using MoarUtils.commands.logging;
+using RestSharp;
 
 namespace MoarUtils.commands.proxy.kitten {
   public class GetUsableWebProxies {
     public const int defaultMinimumUptimePercentage = 65;
 
     public static List<WebProxy> Execute(
-      string apiKey, 
+      string apiKey,
       string apiHost,
-      int minimumUptimePercentage = defaultMinimumUptimePercentage, 
-      int maxResults = 10, 
+      int minimumUptimePercentage = defaultMinimumUptimePercentage,
+      int maxResults = 10,
       int minLatencySeconds = 4,
       bool anonymous = false,
       string limitProxyTypes = "https"
@@ -22,10 +22,10 @@ namespace MoarUtils.commands.proxy.kitten {
         var rc = new RestClient(apiHost);
         var rr = rc.ExecuteAsync(
           new RestRequest {
-            Resource = "api/Proxy/get?apiKey=" + apiKey 
+            Resource = "api/Proxy/get?apiKey=" + apiKey
                         + "&limitProxyTypes=" + limitProxyTypes
-                        + "&minUptime=" + minimumUptimePercentage 
-                        + "&pageSize=" + maxResults 
+                        + "&minUptime=" + minimumUptimePercentage
+                        + "&pageSize=" + maxResults
                         + "&sortBy=latestTest"
                         + "&active=true"
                         + "&minLatency=" + minLatencySeconds

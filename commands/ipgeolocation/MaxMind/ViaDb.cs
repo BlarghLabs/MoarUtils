@@ -1,11 +1,10 @@
-﻿using MaxMind.GeoIP2;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using MaxMind.GeoIP2;
 using MaxMind.GeoIP2.Model;
 using MaxMind.GeoIP2.Responses;
 using MoarUtils.commands.logging;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-
 namespace MoarUtils.commands.ipgeolocation.maxmind {
   public class ViaDb {
     public static int MAXMIND_WS_USER_ID;
@@ -156,12 +155,12 @@ namespace MoarUtils.commands.ipgeolocation.maxmind {
       }
     }
     public static CityResponse GetCityResponse(
-      string ip, 
-      bool throwOnError = false, 
+      string ip,
+      bool throwOnError = false,
       bool doNotWarnOnNotInDb = true
     ) {
       try {
-        if (string.IsNullOrWhiteSpace(ip)){
+        if (string.IsNullOrWhiteSpace(ip)) {
           return null;
         }
         if (ip == "::1") {

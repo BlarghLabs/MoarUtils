@@ -1,84 +1,70 @@
-﻿using MoarUtils.commands.logging;
-using Newtonsoft.Json;
-using RestSharp;
-using System;
+﻿using System;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
+using MoarUtils.commands.logging;
+using MoarUtils.models.commands;
+using Newtonsoft.Json;
+using RestSharp;
 
 namespace MoarUtils.Utils.GoogleAuth {
   public class GetUserInfo {
-    public class request {
+    public class Request {
       public string clientId { get; set; }
       public string clientSecret { get; set; }
       public string refreshToken { get; set; }
     }
 
-    public class response {
+    public class Response : ResponseStatusModel {
       public string accessToken { get; set; }
       public string email { get; set; }
       public string picture { get; set; }
       public string id { get; set; }
+      public string jsonContent { get; set; }
       public bool verifiedEmail { get; set; }
     }
 
-    public static void Execute(
-      request m,
-      out response r,
-      out HttpStatusCode hsc,
-      out string status,
-      CancellationToken? ct = null
+    public static async Task<Response> Execute(
+      Request request,
+      CancellationToken cancellationToken
     ) {
-      r = new response { };
-      status = "";
-      hsc = HttpStatusCode.BadRequest;
+      var response = new Response { };
+
       var content = "";
       try {
-        if (string.IsNullOrEmpty(m.refreshToken)) {
-          status = "refresh token is required";
-          hsc = HttpStatusCode.BadRequest;
-          return;
+        if (string.IsNullOrWhiteSpace(request.refreshToken)) {
+          return response = new Response { status = "refresh token is required" };
         }
 
-        GetNewAccessTokenFromRefreshToken.Execute(
-          hsc: out hsc,
-          status: out status,
-          m: new GetNewAccessTokenFromRefreshToken.request {
-            clientId = m.clientId,
-            refreshToken = m.refreshToken,
-            clientSecret = m.clientSecret,
+        var getNewAccessTokenFromRefreshTokenResponse = await GetNewAccessTokenFromRefreshToken.Execute(
+          request: new GetNewAccessTokenFromRefreshToken.Request {
+            clientId = request.clientId,
+            refreshToken = request.refreshToken,
+            clientSecret = request.clientSecret,
           },
-          r: out GetNewAccessTokenFromRefreshToken.response r1,
-          ct: ct
+          cancellationToken: cancellationToken
         );
-        if (hsc != HttpStatusCode.OK) {
-          status = "unable to GetNewAccessTokenFromRefreshToken";
-          hsc = HttpStatusCode.BadRequest;
-          return;
+        if (getNewAccessTokenFromRefreshTokenResponse.httpStatusCode != HttpStatusCode.OK) {
+          return response = new Response { status = "unable to GetNewAccessTokenFromRefreshToken" };
         }
 
-        r.accessToken = r1.access_token;
+        response.accessToken = getNewAccessTokenFromRefreshTokenResponse.access_token;
         var client = new RestClient("https://www.googleapis.com/");
-        var request = new RestRequest("oauth2/v2/userinfo", Method.Get);
-        request.AddHeader("Authorization", "Bearer " + r.accessToken); //Authorization: Bearer XXX
-        var response = client.ExecuteAsync(request).Result;
+        var restRequest = new RestRequest("oauth2/v2/userinfo", Method.Get);
+        restRequest.AddHeader("Authorization", "Bearer " + response.accessToken); //Authorization: Bearer XXX
+        var restResponse = await client.ExecuteAsync(restRequest);
 
-        if (response.StatusCode != HttpStatusCode.OK) {
-          status = $"StatusCode was {response.StatusCode}";
-          hsc = HttpStatusCode.BadRequest;
-          return;
+        if (restResponse.StatusCode != HttpStatusCode.OK) {
+          return response = new Response { status = $"StatusCode was {restResponse.StatusCode}" };
         }
-        if (response.ErrorException != null) {
-          status = $"response had error exception: {response.ErrorException.Message}";
-          hsc = HttpStatusCode.BadRequest;
-          return;
+        if (restResponse.ErrorException != null) {
+          return response = new Response { status = $"response had error exception: {restResponse.ErrorException.Message}" };
         }
-        if (string.IsNullOrWhiteSpace(response.Content)) {
-          status = $"content was empty";
-          hsc = HttpStatusCode.BadRequest;
-          return;
+        if (string.IsNullOrWhiteSpace(restResponse.Content)) {
+          return response = new Response { status = "response content was empty" };
         }
 
-        content = response.Content;
+        response.jsonContent = restResponse.Content;
         dynamic json = JsonConvert.DeserializeObject(content);
 
         #region cheat sheet
@@ -92,40 +78,41 @@ namespace MoarUtils.Utils.GoogleAuth {
         //}
         #endregion
 
-        r.email = json.email == null
+        response.email = json.email == null
           ? null
           : json.email.Value
         ;
-        r.picture = json.picture == null
+        response.picture = json.picture == null
           ? null
           : json.picture.Value
         ;
-        r.id = json.id == null
+        response.id = json.id == null
           ? null
           : json.id.Value
         ;
-        r.verifiedEmail = json.verified_email == null
+        response.verifiedEmail = json.verified_email == null
           ? false
           : json.verified_email.Value
         ;
 
-        hsc = HttpStatusCode.OK;
-        return;
+
+        response.httpStatusCode = HttpStatusCode.OK;
+        return response;
       } catch (Exception ex) {
-        status = "unepxected error"; //was: errorMsg = ex.Message;
-        hsc = HttpStatusCode.InternalServerError;
+        if (cancellationToken.IsCancellationRequested) {
+          return response = new Response { status = Constants.ErrorMessages.CANCELLATION_REQUESTED_STATUS };
+        }
         LogIt.E(ex);
-        return;
+        return response = new Response { status = Constants.ErrorMessages.UNEXPECTED_ERROR_STATUS, httpStatusCode = HttpStatusCode.InternalServerError };
       } finally {
         LogIt.I(JsonConvert.SerializeObject(new {
-          hsc,
-          status,
-          //m, //logging
-          //content, //logging
-          //r,
-          r.email,
-          r.picture,
-          r.verifiedEmail,
+          response.httpStatusCode,
+          response.status,
+          //request, //logging
+          response?.jsonContent, //logging
+          response?.email,
+          response?.picture,
+          response?.verifiedEmail,
         }, Formatting.Indented));
       }
     }

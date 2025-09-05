@@ -1,7 +1,4 @@
-
-using System.Collections;
-
-namespace MoarUtils.Model {
+namespace MoarUtils.models.gis {
 
   /// <summary>
   /// GeoAddress is an address object which includes latitude and longitude (and the precison of that geoCoding).
@@ -16,18 +13,6 @@ namespace MoarUtils.Model {
     public string precision { get; set; }
     public string warning { get; set; }
     public string errorMessage { get; set; }
-
-    public YahooGeoAddress(string street, string city, string stateCode, string zipCode, string latitude, string longitude, string precision, string warning, string errorMessage) {
-      this.street = street;
-      this.city = city;
-      this.stateCode = stateCode;
-      this.zipCode = zipCode;
-      this.latitude = latitude;
-      this.longitude = longitude;
-      this.precision = precision;
-      this.warning = warning;
-      this.errorMessage = errorMessage;
-    }
 
     /*
     StringBuilder sbResult = new StringBuilder();

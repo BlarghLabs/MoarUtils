@@ -16,7 +16,7 @@ namespace MoarUtils.Utils {
     }
 
     //public static T ToEnum<T>(this string value, T defaultValue) {
-    //  if (string.IsNullOrEmpty(value)) {
+    //  if (string.IsNullOrWhiteSpace(value)) {
     //    return defaultValue;
     //  }
 

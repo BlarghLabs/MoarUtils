@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MoarUtils.Utils {
+﻿namespace MoarUtils.Utils {
   public class HumanReadableFileSize {
     // Returns the human-readable file size for an arbitrary, 64-bit file size
     //  The default format is "0.### XB", e.g. "4.2 KB" or "1.434 GB"

@@ -1,9 +1,9 @@
-﻿using MoarUtils.commands.logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using MoarUtils.commands.logging;
+using Newtonsoft.Json;
 
 namespace MoarUtils.commands.web {
   public class GetPublicIpAddress {

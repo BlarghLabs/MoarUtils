@@ -7,6 +7,9 @@ namespace MoarUtils.enums {
     MapQuest,
     Microsoft,
     Esri,
-    Geocodio
+    Geocodio,
+    Geoapify,
+    //Osm,
+    OpenStreetMap,
   }
 }

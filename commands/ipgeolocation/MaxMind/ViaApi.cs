@@ -1,9 +1,9 @@
-﻿using MoarUtils.enums;
+﻿using System;
+using System.Threading;
 using MaxMind.GeoIP2;
 using MaxMind.GeoIP2.Responses;
-using System;
-using System.Threading;
 using MoarUtils.commands.logging;
+using MoarUtils.enums;
 
 namespace MoarUtils.commands.ipgeolocation.maxmind {
   public class ViaApi {

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace MoarUtils.filters {
@@ -21,7 +18,7 @@ namespace MoarUtils.filters {
 
     public IEnumerable<ModelClientValidationRule> GetClientValidationRules(ModelMetadata metadata, ControllerContext context) {
       yield return new ModelClientValidationRule {
-        ErrorMessage = String.IsNullOrEmpty(ErrorMessage) ? FormatErrorMessage(metadata.DisplayName) : ErrorMessage,
+        ErrorMessage = String.IsNullOrWhiteSpace(ErrorMessage) ? FormatErrorMessage(metadata.DisplayName) : ErrorMessage,
         ValidationType = "enforcetrue"
       };
     }

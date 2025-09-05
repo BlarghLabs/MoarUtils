@@ -122,6 +122,9 @@
     <Compile Include="commands\aws\s3\UpdateContentType.cs" />
     <Compile Include="commands\exceptions\GetBaseException.cs" />
     <Compile Include="commands\gis\geocode\ViaGeocodio.cs" />
+    <Compile Include="commands\gis\geocode\ViaGeoapify.cs" />
+    <Compile Include="commands\gis\geocode\ViaOpenStreetMap.cs" />
+    <Compile Include="commands\gis\PlusCodeValidator.cs" />
     <Compile Include="commands\googleauth\GetUserInfoFromAccessToken.cs" />
     <Compile Include="commands\lists\SplitList.cs" />
     <Compile Include="commands\strings\StringCompression.cs" />
@@ -133,11 +136,13 @@
     <Compile Include="commands\time\GetRelativeTime.cs" />
     <Compile Include="commands\validation\ipaddresses\IsValidIpAddress.cs" />
     <Compile Include="commands\validation\ipaddresses\IsValidIpV4.cs" />
+    <Compile Include="commands\validation\GeocodeValidation.cs" />
     <Compile Include="commands\web\GetExecutingUsername.cs" />
     <Compile Include="commands\web\GetRawUrl.cs" />
     <Compile Include="commands\web\GetPublicIpAddress.cs" />
     <Compile Include="commands\web\UnauthenticatedUser.cs" />
     <Compile Include="commands\web\UserImpersonation.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="enums\DesiredProxyType.cs" />
     <Compile Include="enums\GeocodeSource.cs" />
     <Compile Include="enums\UserMsgFormat.cs" />
@@ -168,9 +173,9 @@
     <Compile Include="models\AreaCode.cs" />
     <Compile Include="models\DownloadFile.cs" />
     <Compile Include="models\commands\ResponseStatusModel.cs" />
-    <Compile Include="models\YahooApiGeocoderResult.cs" />
-    <Compile Include="models\YahooAddressFinderResult.cs" />
-    <Compile Include="models\YahooGeoAddress.cs" />
+    <Compile Include="models\gis\YahooApiGeocoderResult.cs" />
+    <Compile Include="models\gis\YahooAddressFinderResult.cs" />
+    <Compile Include="models\gis\YahooGeoAddress.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -200,9 +205,9 @@
     <Compile Include="enums\MaxmindSource.cs" />
     <Compile Include="enums\EmailEngine.cs" />
     <Compile Include="enums\Format.cs" />
-    <Compile Include="models\Coordinate.cs" />
+    <Compile Include="models\gis\Coordinate.cs" />
     <Compile Include="models\OAuth2TokenResponse.cs" />
-    <Compile Include="models\Polygon.cs" />
+    <Compile Include="models\gis\Polygon.cs" />
     <Compile Include="commands\LinqUtils.cs" />
     <Compile Include="commands\reflection\AssemblyInfo.cs" />
     <Compile Include="commands\Config.cs" />
@@ -277,7 +282,7 @@
       <Version>3.3.110.62</Version>
     </PackageReference>
     <PackageReference Include="DotNetZip">
-      <Version>1.13.3</Version>
+      <Version>1.16.0</Version>
     </PackageReference>
     <PackageReference Include="EntityFramework">
       <Version>6.2.0</Version>

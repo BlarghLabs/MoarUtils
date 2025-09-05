@@ -1,6 +1,6 @@
-﻿using MoarUtils.enums;
-using System;
+﻿using System;
 using System.Net;
+using MoarUtils.enums;
 
 
 namespace MoarUtils.commands.proxy.pistol {

@@ -1,21 +1,21 @@
-﻿using MoarUtils.Model;
-using Ionic.Zip;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using Ionic.Zip;
 using MoarUtils.commands.logging;
+using MoarUtils.models.gis;
 
 namespace MoarUtils.commands.gis {
   public class Kml {
     public const decimal DEFAULT_ICON_SCALE = (decimal)0.5;
     public const decimal DEFAULT_LABEL_SCALE = (decimal)0.5;
 
-    private static List<string> CreateStyleCollection(List<Coordinate> loc) {
+    private static List<string> CreateStyleCollection(List<Coordinate> coordinates) {
       List<string> los = new List<string>();
 
-      foreach (var c in loc) {
-        c.iconUrl = !string.IsNullOrEmpty(c.iconUrl) ? c.iconUrl : "http://maps.google.com/mapfiles/kml/paddle/red-circle.png";
+      foreach (var c in coordinates) {
+        c.iconUrl = !string.IsNullOrWhiteSpace(c.iconUrl) ? c.iconUrl : "http://maps.google.com/mapfiles/kml/paddle/red-circle.png";
         if (!los.Contains(c.iconUrl)) {
           los.Add(c.iconUrl);
         }
@@ -30,10 +30,10 @@ namespace MoarUtils.commands.gis {
     /// <param name="kml"></param>
     /// <param name="kmzFileNameWithoutExtension"></param>
     /// <param name="outPath">full out path, should end in .kmz</param>
-    public static void SaveKmz(List<Coordinate> loc, string outPath) {
+    public static void SaveKmz(List<Coordinate> coordinates, string outPath) {
       try {
         using (ZipFile zf = new ZipFile()) {
-          using (MemoryStream kml = SaveKmz(loc, true, true, true)) {
+          using (MemoryStream kml = SaveKmz(coordinates, true, true, true)) {
             ZipEntry oZipEntry = zf.AddEntry("doc.kml", kml);
             zf.Save(outPath);
           }
@@ -44,7 +44,7 @@ namespace MoarUtils.commands.gis {
       }
     }
 
-    public static MemoryStream SaveKmz(List<Coordinate> loc, bool includeNewlines = true, bool includeTitle = false, bool includeDesc = false, decimal labelScale = DEFAULT_LABEL_SCALE, decimal iconScale = DEFAULT_ICON_SCALE) {
+    public static MemoryStream SaveKmz(List<Coordinate> coordinates, bool includeNewlines = true, bool includeTitle = false, bool includeDesc = false, decimal labelScale = DEFAULT_LABEL_SCALE, decimal iconScale = DEFAULT_ICON_SCALE) {
       MemoryStream ms = new MemoryStream();
       XmlTextWriter xtw = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
       xtw.WriteStartDocument();
@@ -74,7 +74,7 @@ namespace MoarUtils.commands.gis {
       xtw.WriteComment("Style Definitions (START)");
       if (includeNewlines) xtw.WriteWhitespace(Environment.NewLine);
 
-      List<string> los = CreateStyleCollection(loc);
+      List<string> los = CreateStyleCollection(coordinates);
       foreach (var s in los) {
         xtw.WriteRaw("<Style id=\"" + los.IndexOf(s).ToString() + "\">" + Environment.NewLine);
         xtw.WriteRaw("<IconStyle>" + Environment.NewLine);
@@ -93,7 +93,7 @@ namespace MoarUtils.commands.gis {
       if (includeNewlines) xtw.WriteWhitespace(Environment.NewLine);
       #endregion
 
-      foreach (var c in loc) {
+      foreach (var c in coordinates) {
         xtw.WriteStartElement("Placemark");
         if (includeNewlines) xtw.WriteWhitespace(Environment.NewLine);
 

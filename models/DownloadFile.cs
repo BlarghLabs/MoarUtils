@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MoarUtils.Model {
+namespace MoarUtils.models.commands {
   public class DownloadFile : IDisposable {
     public byte[] bytes;
     public string fileName;

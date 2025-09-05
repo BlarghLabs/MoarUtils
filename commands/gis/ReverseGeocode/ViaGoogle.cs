@@ -1,8 +1,8 @@
-﻿using MoarUtils.Model;
-using MoarUtils.commands.logging;
-using RestSharp;
-using System;
+﻿using System;
 using System.Net;
+using MoarUtils.commands.logging;
+using MoarUtils.models.gis;
+using RestSharp;
 
 namespace moarutils.utils.gis.reversegeocode {
 
@@ -14,7 +14,7 @@ namespace moarutils.utils.gis.reversegeocode {
       string apiKey,
       out AddressFields af
     ) {
-      af = new AddressFields{};
+      af = new AddressFields { };
       try {
         var resource = "maps/api/geocode/json?latlng=" + lat.ToString() + "," + lng.ToString() + "&key=" + apiKey;
         var client = new RestClient("https://maps.googleapis.com/");
@@ -34,9 +34,9 @@ namespace moarutils.utils.gis.reversegeocode {
         for (int i = 0; i < address_components.Count; i++) {
           var ac = address_components[i];
           var lot = ac.types;
-          for(int j =0; j < ac.types.Count; j++){
-            var t = (string) ac.types[j].Value;
-            if (t.Equals("street_number")) { 
+          for (int j = 0; j < ac.types.Count; j++) {
+            var t = (string)ac.types[j].Value;
+            if (t.Equals("street_number")) {
               af.line1 = ac.short_name.Value;
               break;
             }

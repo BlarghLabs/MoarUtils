@@ -14,7 +14,7 @@ namespace MoarUtils.Utils.measurements {
       var result = cubicFeet.Value * 0.02831684659M;
       return result;
     }
-    
+
     public static Decimal? CubicMetersToCubicFeet(
       Decimal? cubicMeters,
       bool roundToZeroDecimals = false

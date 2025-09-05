@@ -1,8 +1,8 @@
-﻿using Amazon;
-using MoarUtils.commands.logging;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
+using Amazon;
+using MoarUtils.commands.logging;
 
 namespace MoarUtils.Utils.AWS.S3 {
   public class CrossRegionCopy {

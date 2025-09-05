@@ -1,6 +1,6 @@
-﻿using MoarUtils.commands.logging;
-using System;
+﻿using System;
 using System.Net;
+using MoarUtils.commands.logging;
 
 namespace MoarUtils.commands.validation.ipaddresses {
   public class IsValidIpAddress {
@@ -16,7 +16,7 @@ namespace MoarUtils.commands.validation.ipaddresses {
               // we have IPv6
               return true;
             default:
-              // umm... yeah... I'm going to need to take your red packet and...
+              // umm... yeah... I'request going to need to take your red packet and...
               return false;
           }
         }

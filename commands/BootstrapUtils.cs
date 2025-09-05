@@ -1,9 +1,4 @@
-﻿using MoarUtils.enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Web.UI.HtmlControls;
 
 namespace MoarUtils.Utils {
@@ -11,7 +6,7 @@ namespace MoarUtils.Utils {
     public enum BootstrapAlertFormat { success, info, warning, danger };
     public static void SetStatus(string msg, BootstrapAlertFormat baf, ref HtmlGenericControl div) {
       div.Attributes["class"] = "alert alert-" + baf.ToString();
-      div.Visible = !string.IsNullOrEmpty(msg);
+      div.Visible = !string.IsNullOrWhiteSpace(msg);
       div.InnerHtml = msg;
     }
     public static void SetStatus(Exception ex, ref HtmlGenericControl div) {

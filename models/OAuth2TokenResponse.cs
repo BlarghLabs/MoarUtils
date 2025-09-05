@@ -4,7 +4,7 @@
 //using System.Text;
 //using System.Threading.Tasks;
 
-//namespace MoarUtils.Model {
+//namespace MoarUtils.models.commands {
 //  public class OAuth2TokenResponse {
 
 //    //{

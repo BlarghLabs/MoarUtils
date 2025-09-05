@@ -1,7 +1,6 @@
-﻿using MoarUtils.Model;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using MoarUtils.models.gis;
 
 namespace MoarUtils.Utils.Gis {
   public static class DistCalc {
@@ -38,9 +37,9 @@ namespace MoarUtils.Utils.Gis {
     /// <summary>
     /// Calculate the distance between two geocodes.
     /// </summary>
-    public static double CalcDistance(double lat1, double lng1, double lat2, double lng2, GeoCodeCalcMeasurement m) {
+    public static double CalcDistance(double lat1, double lng1, double lat2, double lng2, GeoCodeCalcMeasurement request) {
       double radius = DistCalc.EarthRadiusInMiles;
-      if (m == GeoCodeCalcMeasurement.Kilometers) {
+      if (request == GeoCodeCalcMeasurement.Kilometers) {
         radius = DistCalc.EarthRadiusInKilometers;
       }
       return radius * 2 * Math.Asin(Math.Min(1, Math.Sqrt((Math.Pow(Math.Sin((DiffRadian(lat1, lat2)) / 2.0), 2.0) + Math.Cos(ToRadian(lat1)) * Math.Cos(ToRadian(lat2)) * Math.Pow(Math.Sin((DiffRadian(lng1, lng2)) / 2.0), 2.0)))));
@@ -57,34 +56,34 @@ namespace MoarUtils.Utils.Gis {
     //Some French Site
     //http://www.lacosmo.com/ortho/ortho.html
 
-    public static List<Coordinate> GetItemsWithinDistance(List<Coordinate> loc, Coordinate c, decimal allowableDistanceInMiles) {
-      return GetItemsWithinDistance(loc, c, allowableDistanceInMiles, -1);
+    public static List<Coordinate> GetItemsWithinDistance(List<Coordinate> coordinates, Coordinate c, decimal allowableDistanceInMiles) {
+      return GetItemsWithinDistance(coordinates, c, allowableDistanceInMiles, -1);
     }
-    public static List<Coordinate> GetItemsWithinDistance(List<Coordinate> loc, Coordinate c, decimal allowableDistanceInMiles, int iOnlyReturnTheClosestX) {
+    public static List<Coordinate> GetItemsWithinDistance(List<Coordinate> coordinates, Coordinate c, decimal allowableDistanceInMiles, int iOnlyReturnTheClosestX) {
       //If iOnlyReturnTheClosestX == -1, then do NOT limit results
       if (iOnlyReturnTheClosestX == -1) {
-        iOnlyReturnTheClosestX = loc.Count;
+        iOnlyReturnTheClosestX = coordinates.Count;
       }
 
-      List<Coordinate> loc1 = new List<Coordinate>();
-      SortedList slResults = new SortedList();
+      List<Coordinate> resultCoordinates = new List<Coordinate>();
+      //SortedList slResults = new SortedList();
 
-      foreach (var c1 in loc) {
+      foreach (var c1 in coordinates) {
         decimal dDistanceCalculated = CalcDistance(c.lat, c.lng, c1.lat, c1.lng);
         if (dDistanceCalculated <= allowableDistanceInMiles) {
-          loc1.Add(c1);
+          resultCoordinates.Add(c1);
         }
       }
 
-      return loc1;
+      return resultCoordinates;
     }
 
 
-    public static void GetOneItemWithinShortestDistance(List<Coordinate> loc, Coordinate c, out Coordinate cResult, out decimal distanceResult) {
+    public static void GetOneItemWithinShortestDistance(List<Coordinate> coordinates, Coordinate c, out Coordinate cResult, out decimal distanceResult) {
       cResult = null;
       distanceResult = 0;
 
-      foreach (var c1 in loc) {
+      foreach (var c1 in coordinates) {
         decimal dDistanceCalculated = CalcDistance(c.lat, c.lng, c.lat, c.lng);
 
         if (cResult == null) {
@@ -108,13 +107,13 @@ namespace MoarUtils.Utils.Gis {
     }
 
     public static bool IsPointInPoly(Polygon p, Coordinate c) {
-      if (!IsPointInPoly(p.loc, c)) {
+      if (!IsPointInPoly(p.coordinates, c)) {
         //was not in priary poly
         return false;
-      }else{
+      } else {
         //If in outer poly, then confirm not in inner poly
         foreach (var ep in p.exclusionaryPolygons) {
-          if (IsPointInPoly(ep.loc, c)) {
+          if (IsPointInPoly(ep.coordinates, c)) {
             //was in both primary but also exclusionary
             return false;
           }
@@ -124,17 +123,17 @@ namespace MoarUtils.Utils.Gis {
       }
     }
 
-    public static bool IsPointInPoly(List<Coordinate> loc, Coordinate c) {
+    public static bool IsPointInPoly(List<Coordinate> coordinates, Coordinate c) {
       bool bResult = false;
 
       //Minus 1 bc 1 pt is listed twice (could otherwsie accomplish w/ give me distnct)
-      int iNumberOfVerticies = (loc.Count == 0) ? /* no poly creted yet */ 0 : loc.Count - 1;
+      int iNumberOfVerticies = (coordinates.Count == 0) ? /* no poly creted yet */ 0 : coordinates.Count - 1;
 
       //Do Work
       int i, j;
       for (i = 0, j = iNumberOfVerticies - 1; i < iNumberOfVerticies; j = i++) {
-        if (((loc[i].lat > c.lat) != (loc[j].lat > c.lat))
-          && (c.lng < (loc[j].lng - loc[i].lng) * (c.lat - loc[i].lat) / (loc[j].lat - loc[i].lat) + loc[i].lng)) {
+        if (((coordinates[i].lat > c.lat) != (coordinates[j].lat > c.lat))
+          && (c.lng < (coordinates[j].lng - coordinates[i].lng) * (c.lat - coordinates[i].lat) / (coordinates[j].lat - coordinates[i].lat) + coordinates[i].lng)) {
 
           bResult = !bResult;
         }

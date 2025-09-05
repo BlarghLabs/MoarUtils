@@ -1,8 +1,8 @@
-﻿using Amazon;
+﻿using System;
+using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
 using MoarUtils.commands.logging;
-using System;
 
 namespace MoarUtils.Utils.AWS.S3 {
   public class Copy {
@@ -16,7 +16,7 @@ namespace MoarUtils.Utils.AWS.S3 {
       string destKey,
       S3CannedACL s3ca,
       string contentType = null
-      //out long? fileLengthBytes
+    //out long? fileLengthBytes
     ) {
       //note: not vlidating cannced acls
       //fileLengthBytes = null;

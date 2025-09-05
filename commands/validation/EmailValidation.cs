@@ -16,8 +16,8 @@ namespace MoarUtils.commands.validation {
 
     public static bool IsEmailValid(string email, string displayName = null) {
       //var b1 = IsEmailValid1(email);
-      var b2 = !string.IsNullOrEmpty(email) && IsEmailValidIncludingDisplayName(email, displayName);
-      
+      var b2 = !string.IsNullOrWhiteSpace(email) && IsEmailValidIncludingDisplayName(email, displayName);
+
       //was: return b1 && b2;
       return b2; //needed xxxx-@hotmail.com to work
     }
@@ -42,7 +42,7 @@ namespace MoarUtils.commands.validation {
     }
      * */
 
-    public static bool IsEmailValidIncludingDisplayName(string address, string displayName = null ) {
+    public static bool IsEmailValidIncludingDisplayName(string address, string displayName = null) {
       try {
         MailAddress ma = new MailAddress(address, displayName, Encoding.UTF8);
         return true;

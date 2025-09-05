@@ -1,10 +1,4 @@
-﻿using MoarUtils.commands.exceptions;
-using MoarUtils.commands.validation;
-using MoarUtils.enums;
-using MoarUtils.Utils;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Configuration;
@@ -17,6 +11,12 @@ using System.Text;
 using System.Threading;
 using System.Timers;
 using System.Web;
+using MoarUtils.commands.exceptions;
+using MoarUtils.commands.validation;
+using MoarUtils.enums;
+using MoarUtils.Utils;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 //using Twilio;
 
 //TODO: rewite this using trace and not filehandlers
@@ -47,7 +47,7 @@ namespace MoarUtils.commands.logging {
     private System.Timers.Timer newFileEachDay;
     private System.Timers.Timer newFileIfMaxFileSizeMet;
     private System.Timers.Timer sendEmail;
-    private Mutex m;
+    private Mutex mutex;
     private bool emailSettingsAppearValid;
     private bool initiated = false;
     private bool inCleanup = false;
@@ -85,7 +85,7 @@ namespace MoarUtils.commands.logging {
     LogIt() {
       try {
         mShutdownRequested = new Mutex();
-        m = new Mutex();
+        mutex = new Mutex();
         al = new ConcurrentQueue<string>();
         el = new ConcurrentQueue<Action>();
 
@@ -313,13 +313,13 @@ namespace MoarUtils.commands.logging {
         &&
         !string.IsNullOrWhiteSpace(ex.InnerException.Message)
         &&
-        innerExceptionMessages.Any(m => ex.Message.Contains(m))
+        innerExceptionMessages.Any(request => ex.Message.Contains(request))
       ) {
         var sb = new StringBuilder();
         var maxLength = 5;
         var current = ex.InnerException;
         while (maxLength-- > 0 && current != null) {
-          if (!innerExceptionMessages.Any(m => current.Message.Contains(m))) {
+          if (!innerExceptionMessages.Any(request => current.Message.Contains(request))) {
             sb.AppendLine(current.Message);
           }
           current = current.InnerException;
@@ -527,7 +527,7 @@ namespace MoarUtils.commands.logging {
       try {
         if (!shutdownRequested) {
           if (Instance.initiated) {
-            lock (Instance.m) {
+            lock (Instance.mutex) {
               var alBuffer = new List<string>();
               string bufferItem;
               while (Instance.al.TryDequeue(out bufferItem)) {
@@ -575,7 +575,7 @@ namespace MoarUtils.commands.logging {
       //Create new file if > max file size 
       if (Instance.initiated) {
         if (!shutdownRequested) {
-          lock (Instance.m) {
+          lock (Instance.mutex) {
             var fi = new FileInfo(logFilePath);
             var maxBytes = maxFileMegaBytes * 1000 * 1000;
             if (fi.Length > (maxBytes)) {
@@ -590,7 +590,7 @@ namespace MoarUtils.commands.logging {
       //Create new file if we have been open for over 24 hours
       if (Instance.initiated) {
         if (!shutdownRequested) {
-          lock (Instance.m) {
+          lock (Instance.mutex) {
             Instance.SetFilePath();
           }
         }

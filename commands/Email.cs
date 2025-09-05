@@ -1,31 +1,31 @@
-﻿using MoarUtils.commands.logging;
-using MoarUtils.enums;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Configuration;
 using System.Net.Configuration;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using MoarUtils.commands.logging;
+using MoarUtils.enums;
 
 namespace MoarUtils.Utils {
   public static class Email {
     public static void SendMessage(
-      string fromAddress, 
-      string fromDisplayName, 
-      string toAddress, 
-      string toDisplayName, 
-      string subject, 
-      string body, 
-      string replyToAddress, 
-      string replyToDisplayName, 
-      string ccAddress, 
-      string ccDisplayName, 
-      EmailEngine ee, 
-      bool isHtml = true, 
-      bool sendAsync = false, 
+      string fromAddress,
+      string fromDisplayName,
+      string toAddress,
+      string toDisplayName,
+      string subject,
+      string body,
+      string replyToAddress,
+      string replyToDisplayName,
+      string ccAddress,
+      string ccDisplayName,
+      EmailEngine ee,
+      bool isHtml = true,
+      bool sendAsync = false,
       bool throwOnError = true
     ) {
-      if (string.IsNullOrEmpty(toAddress) || string.IsNullOrEmpty(fromAddress)) {
+      if (string.IsNullOrWhiteSpace(toAddress) || string.IsNullOrWhiteSpace(fromAddress)) {
         throw new Exception("to or from were empty");
       } else {
         switch (ee) {
@@ -87,11 +87,11 @@ namespace MoarUtils.Utils {
             }
             #endregion
 
-            if (!string.IsNullOrEmpty(replyToAddress)) {
+            if (!string.IsNullOrWhiteSpace(replyToAddress)) {
               mm.ReplyToList.Add(new MailAddress(replyToAddress, replyToDisplayName, System.Text.Encoding.UTF8));
             }
 
-            if (!string.IsNullOrEmpty(ccAddress)) {
+            if (!string.IsNullOrWhiteSpace(ccAddress)) {
               mm.CC.Add(new MailAddress(ccAddress, ccDisplayName, System.Text.Encoding.UTF8));
             }
 

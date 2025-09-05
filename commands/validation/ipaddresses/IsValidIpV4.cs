@@ -1,7 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Mail;
-using System.Text;
 using System.Linq;
 
 namespace MoarUtils.commands.validation.ipaddresses {

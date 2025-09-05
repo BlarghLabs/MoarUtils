@@ -1,24 +1,24 @@
-﻿using MoarUtils.commands.logging;
+﻿using System;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using MoarUtils.commands.logging;
+using MoarUtils.models.commands;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
-using System;
-using System.Net;
 
 namespace MoarUtils.Utils.GoogleAuth {
   public class ExchangeCodeForTokens {
-    public class request {
-      public request() {
-        includeEmptyScope = true;
-      }
+    public class Request {
       public string code { get; set; }
       public string clientId { get; set; }
       public string clientSecret { get; set; }
       public string redirectUrl { get; set; }
-      public bool includeEmptyScope { get; set; }
+      public bool includeEmptyScope { get; set; } = true;
     }
 
-    public class response {
+    public class Response : ResponseStatusModel {
       //{
       //  "access_token" : "XXX",
       //  "token_type" : "Bearer",
@@ -35,15 +35,11 @@ namespace MoarUtils.Utils.GoogleAuth {
     /// <summary>
     /// On success save refresh and authtoken
     /// </summary>
-    public static void Execute(
-      request m,
-      out response r,
-      out string status,
-      out HttpStatusCode hsc
+    public static async Task<Response> Execute(
+      Request request,
+      CancellationToken cancellationToken
     ) {
-      r = new response { };
-      hsc = HttpStatusCode.BadRequest;
-      status = "";
+      var response = new Response { };
       try {
         //POST /o/oauth2/token HTTP/1.1
         //Host: accounts.google.com
@@ -53,20 +49,20 @@ namespace MoarUtils.Utils.GoogleAuth {
 
         //code=XXX&redirect_uri=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&client_id=XXX.apps.googleusercontent.com&scope=&client_secret=************&grant_type=authorization_code
 
-        var request = new RestRequest("o/oauth2/token", Method.Post);
-        request.AddParameter("Content-Type", "application/x-www-form-urlencoded");
-        request.AddParameter("code", m.code);
-        request.AddParameter("redirect_uri", m.redirectUrl);
-        request.AddParameter("client_id", m.clientId);
-        if (m.includeEmptyScope) {
-          request.AddParameter("scope", "");
+        var restRequest = new RestRequest("o/oauth2/token", Method.Post);
+        restRequest.AddParameter("Content-Type", "application/x-www-form-urlencoded");
+        restRequest.AddParameter("code", request.code);
+        restRequest.AddParameter("redirect_uri", request.redirectUrl);
+        restRequest.AddParameter("client_id", request.clientId);
+        if (request.includeEmptyScope) {
+          restRequest.AddParameter("scope", "");
         }
-        request.AddParameter("client_secret", m.clientSecret);
-        request.AddParameter("grant_type", "authorization_code");
+        restRequest.AddParameter("client_secret", request.clientSecret);
+        restRequest.AddParameter("grant_type", "authorization_code");
 
         var client = (new RestClient("https://accounts.google.com/"));
-        var response = client.ExecuteAsync(request).Result;
-        var content = response.Content;
+        var restResponse = await client.ExecuteAsync(restRequest);
+        var content = restResponse.Content;
 
         //valid response: 
         //{
@@ -76,32 +72,34 @@ namespace MoarUtils.Utils.GoogleAuth {
         //  "refresh_token" : "XXX"
         //}
 
-        if (response.StatusCode != HttpStatusCode.OK) {
-          status = response.StatusCode.ToString() + "|" + response.Content;
-          hsc = HttpStatusCode.BadRequest;
-          return;
+        if (restResponse.StatusCode != HttpStatusCode.OK) {
+          return response = new Response { status = restResponse.StatusCode.ToString() + "|" + restResponse.Content };
         }
 
         //LogIt.D(content);
         dynamic json = JObject.Parse(content);
-        r = new response {
+        response = new Response {
           access_token = json.access_token,
           expires_in = json.expires_in,
           refresh_token = json.refresh_token,
           token_type = json.token_type
         };
-        hsc = HttpStatusCode.OK;
-        return;
+
+        response.httpStatusCode = HttpStatusCode.OK;
+        return response;
       } catch (Exception ex) {
+        if (cancellationToken.IsCancellationRequested) {
+          return response = new Response { status = Constants.ErrorMessages.CANCELLATION_REQUESTED_STATUS };
+        }
         LogIt.E(ex);
-        hsc = HttpStatusCode.InternalServerError;
-        status = "unexpected error";
+        return response = new Response { status = Constants.ErrorMessages.UNEXPECTED_ERROR_STATUS, httpStatusCode = HttpStatusCode.InternalServerError };
       } finally {
-        m.clientSecret = null; //logging
+        request.clientSecret = null; //logging
         JsonConvert.SerializeObject(new {
-          hsc,
-          status,
-          m
+          response.httpStatusCode,
+          response.status,
+          request,
+          response
         }, Formatting.Indented);
       }
     }
