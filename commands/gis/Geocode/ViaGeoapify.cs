@@ -73,11 +73,11 @@ namespace moarutils.utils.gis.geocode {
         } while (!bRequiredWaitTimeHasElapsed);
       }
 
-      var response = await ExecuteNoRateLimit(
+      var response = ExecuteNoRateLimit(
         request: request,
         wp: wp,
         cancellationToken: cancellationToken
-      );
+      ).Result;
       if (response.httpStatusCode != HttpStatusCode.OK) {
         LogIt.E("unable to geocode");
       }
@@ -124,7 +124,8 @@ namespace moarutils.utils.gis.geocode {
         //if (wp != null) {
         //  client.Proxy = wp;
         //}
-        var restResponse = await client.ExecuteAsync(restRequest);
+        //var restResponse = await client.ExecuteAsync(restRequest).ConfigureAwait(false);
+        var restResponse = client.ExecuteAsync(restRequest).Result;
         #endregion
 
         #region response validation
