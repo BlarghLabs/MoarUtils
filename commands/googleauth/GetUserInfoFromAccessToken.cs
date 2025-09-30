@@ -35,7 +35,8 @@ namespace MoarUtils.Utils.GoogleAuth {
         var client = new RestClient("https://www.googleapis.com/");
         var restRequest = new RestRequest("oauth2/v2/userinfo", Method.Get);
         restRequest.AddHeader("Authorization", "Bearer " + request.accessToken); //Authorization: Bearer XXX
-        var restResponse = await client.ExecuteAsync(restRequest);
+        //var restResponse = await client.ExecuteAsync(restRequest).ConfigureAwait(false);
+        var restResponse = client.ExecuteAsync(restRequest, cancellationToken).Result;
 
         if (restResponse.StatusCode != HttpStatusCode.OK) {
           return response = new Response { status = $"StatusCode was {restResponse.StatusCode}" };

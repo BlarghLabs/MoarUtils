@@ -61,7 +61,9 @@ namespace MoarUtils.Utils.GoogleAuth {
         restRequest.AddParameter("grant_type", "authorization_code");
 
         var client = (new RestClient("https://accounts.google.com/"));
-        var restResponse = await client.ExecuteAsync(restRequest);
+        //var restResponse = await client.ExecuteAsync(restRequest, cancellationToken).ConfigureAwait(false);
+        var restResponse = client.ExecuteAsync(restRequest, cancellationToken).Result;
+        //var restResponse = client.ExecuteAsync(restRequest).Result;
         var content = restResponse.Content;
 
         //valid response: 

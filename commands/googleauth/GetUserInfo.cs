@@ -30,20 +30,21 @@ namespace MoarUtils.Utils.GoogleAuth {
     ) {
       var response = new Response { };
 
-      var content = "";
+      //var content = "";
       try {
         if (string.IsNullOrWhiteSpace(request.refreshToken)) {
           return response = new Response { status = "refresh token is required" };
         }
 
-        var getNewAccessTokenFromRefreshTokenResponse = await GetNewAccessTokenFromRefreshToken.Execute(
+        //var getNewAccessTokenFromRefreshTokenResponse = await GetNewAccessTokenFromRefreshToken.Execute(
+        var getNewAccessTokenFromRefreshTokenResponse = GetNewAccessTokenFromRefreshToken.Execute(
           request: new GetNewAccessTokenFromRefreshToken.Request {
             clientId = request.clientId,
             refreshToken = request.refreshToken,
             clientSecret = request.clientSecret,
           },
           cancellationToken: cancellationToken
-        );
+        ).Result;
         if (getNewAccessTokenFromRefreshTokenResponse.httpStatusCode != HttpStatusCode.OK) {
           return response = new Response { status = "unable to GetNewAccessTokenFromRefreshToken" };
         }
@@ -52,7 +53,8 @@ namespace MoarUtils.Utils.GoogleAuth {
         var client = new RestClient("https://www.googleapis.com/");
         var restRequest = new RestRequest("oauth2/v2/userinfo", Method.Get);
         restRequest.AddHeader("Authorization", "Bearer " + response.accessToken); //Authorization: Bearer XXX
-        var restResponse = await client.ExecuteAsync(restRequest);
+        //var restResponse = await client.ExecuteAsync(restRequest).ConfigureAwait(false);
+        var restResponse = client.ExecuteAsync(restRequest, cancellationToken).Result;
 
         if (restResponse.StatusCode != HttpStatusCode.OK) {
           return response = new Response { status = $"StatusCode was {restResponse.StatusCode}" };
@@ -65,7 +67,7 @@ namespace MoarUtils.Utils.GoogleAuth {
         }
 
         response.jsonContent = restResponse.Content;
-        dynamic json = JsonConvert.DeserializeObject(content);
+        dynamic json = JsonConvert.DeserializeObject(response.jsonContent);
 
         #region cheat sheet
         //{

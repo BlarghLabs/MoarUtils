@@ -57,7 +57,8 @@ namespace MoarUtils.Utils.GoogleAuth {
         restRequest.AddParameter("refresh_token", request.refreshToken);
         restRequest.AddParameter("grant_type", "refresh_token");
         restRequest.AddParameter("Content-Type", "application/x-www-form-urlencoded");
-        var restResponse = await client.ExecuteAsync(restRequest);
+        //var restResponse = await client.ExecuteAsync(restRequest).ConfigureAwait(false);
+        var restResponse = client.ExecuteAsync(restRequest, cancellationToken).Result;
         //valid response: { "access_token":"1/XXX", "expires_in":3920, "token_type":"Bearer",}
         if (restResponse.StatusCode != HttpStatusCode.OK) {
           return response = new Response { status = "StatusCode was " + restResponse.StatusCode };

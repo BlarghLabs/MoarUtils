@@ -66,8 +66,8 @@ namespace moarutils.utils.gis.geocode {
         //if (wp != null) {
         //  client.Proxy = wp;
         //}
-        var restResponse = await client.ExecuteAsync(restRequest);
-
+        //var restResponse = await client.ExecuteAsync(restRequest).ConfigureAwait(false);
+        var restResponse = client.ExecuteAsync(restRequest).Result;
         if (restResponse.ErrorException != null) {
           return response = new Response { status = $"response had error exception: {restResponse.ErrorException.Message}" };
         }
