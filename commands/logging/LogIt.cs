@@ -6,6 +6,7 @@ using System.Data.Entity.Validation;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Configuration;
 using System.Text;
 using System.Threading;
@@ -368,7 +369,7 @@ namespace MoarUtils.commands.logging {
       Log(o, Severity.Debug);
     }
 
-    public static void Log(object o, Severity severity, bool fireEmailAsWell = false) {
+    public static void Log(object o, Severity severity, bool fireEmailAsWell = false, bool removeNewlinesFromMessage = true) {
       try {
         o = o ?? "";
         var msg = o.ToString();
@@ -381,37 +382,100 @@ namespace MoarUtils.commands.logging {
           //if (methodInfo.DeclaringType.Name == typeof(LogIt).Name) {
           //  methodInfo = new StackFrame(3).GetMethod();
           //}
+
           var methodInfo = new StackFrame(1).GetMethod();
-          switch (methodInfo.ToString()) {
-            //I don't see current fcn
-            case "Void LogTwimlHeaders(System.Web.HttpRequestBase)":
-            case "Void LogHeaders(System.Web.HttpRequest)":
-            case "Void LogHeaders(System.Web.HttpRequestBase)":
-            case "Void Log(Twilio.RestException, Severity)":
-            //case "Void Log(System.Exception,  MoarUtils.enums.Severity)":
-            case "Void Log()":
-            case "Void Log(string)":
-            case "Void D(System.Object)":
-            case "Void W(System.Object)":
-            case "Void I(System.Object)":
-            //case "Void E(System.Object)":
-            //case "Void E(System.Exception, Boolean)":
-            case "Void E(System.Object, Boolean)":
-              //dig deeper
-              methodInfo = new StackFrame(2).GetMethod();
-              break;
+          if (methodInfo.DeclaringType.Name == typeof(LogIt).Name) {
+            methodInfo = new StackFrame(2).GetMethod();
           }
-          var classAndMethod = ((methodInfo.DeclaringType == null) ? "null" : methodInfo.DeclaringType.Name) + "|" + methodInfo.Name;
-          var dt = DateTime.UtcNow;
-          var log =
+          if (methodInfo.DeclaringType.Name == typeof(LogIt).Name) {
+            methodInfo = new StackFrame(3).GetMethod();
+          }
+          var className = "";
+          if (methodInfo.DeclaringType != null) {
+            if (methodInfo.DeclaringType.Name.StartsWith("<") || methodInfo.DeclaringType.Name.EndsWith(">")) {
+              className = methodInfo.DeclaringType.ReflectedType.Name;
+            } else {
+              className = methodInfo.DeclaringType.Name;
+            }
+          }
+          var method = "";
+          if (methodInfo.DeclaringType != null) {
+            if (methodInfo.Name.Equals("MoveNext")) {
+              if (
+                methodInfo.DeclaringType.Name.Contains("<")
+                &&
+                methodInfo.DeclaringType.Name.Contains(">")
+                &&
+                (methodInfo.DeclaringType.Name.IndexOf("<") < methodInfo.DeclaringType.Name.IndexOf(">"))
+              ) {
+                int pFrom = methodInfo.DeclaringType.Name.IndexOf("<") + "<".Length;
+                int pTo = methodInfo.DeclaringType.Name.LastIndexOf(">");
+                method = methodInfo.DeclaringType.Name.Substring(pFrom, pTo - pFrom);
+              } else {
+                method = methodInfo.DeclaringType.Name;
+              }
+            } else {
+              method = methodInfo.Name;
+            }
+          }
+          //switch (methodInfo.ToString()) {
+          //  //I don't see current fcn
+          //  case "Void LogTwimlHeaders(System.Web.HttpRequestBase)":
+          //  case "Void LogHeaders(System.Web.HttpRequest)":
+          //  case "Void LogHeaders(System.Web.HttpRequestBase)":
+          //  case "Void Log(Twilio.RestException, Severity)":
+          //  //case "Void Log(System.Exception,  MoarUtils.enums.Severity)":
+          //  case "Void Log()":
+          //  case "Void Log(string)":
+          //  case "Void D(System.Object)":
+          //  case "Void W(System.Object)":
+          //  case "Void I(System.Object)":
+          //  //case "Void E(System.Object)":
+          //  //case "Void E(System.Exception, Boolean)":
+          //  case "Void E(System.Object, Boolean)":
+          //    //dig deeper
+          //    methodInfo = new StackFrame(2).GetMethod();
+          //    break;
+          //}
+          //var classAndMethod = ((methodInfo.DeclaringType == null) ? "null" : methodInfo.DeclaringType.Name) + "|" + methodInfo.Name;
+          //var dt = DateTime.UtcNow;
+          //var log =
+          ////for format consistency
+          ////https://social.msdn.microsoft.com/Forums/vstudio/en-US/bb926074-d593-4e0b-8754-7026acc607ec/datetime-tostring-colon-replaced-with-period?forum=csharpgeneral
+          //dt.ToString("yyyy-MM-dd HH") + ":" + dt.ToString("mm") + ":" + dt.ToString("ss") + "." + dt.ToString("fff")
+          //  + " " //this is for cloud watch logs which requires space after timestamp: http://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/send_logs_to_cwl.html
+          //  + "|[" + severity.ToString().ToUpper() + "]|"
+          //  + classAndMethod + "|"
+          //  + (!removeNewlinesFromMessages ? msg : msg.Replace("\r\n", " ").Replace("\n", " ")); //currently just a string
+
+          var nameSpace = "";
+          if (methodInfo.DeclaringType != null) {
+            nameSpace = methodInfo.DeclaringType.Namespace;
+          }
           //for format consistency
           //https://social.msdn.microsoft.com/Forums/vstudio/en-US/bb926074-d593-4e0b-8754-7026acc607ec/datetime-tostring-colon-replaced-with-period?forum=csharpgeneral
-          dt.ToString("yyyy-MM-dd HH") + ":" + dt.ToString("mm") + ":" + dt.ToString("ss") + "." + dt.ToString("fff")
-            + " " //this is for cloud watch logs which requires space after timestamp: http://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/send_logs_to_cwl.html
-            + "|[" + severity.ToString().ToUpper() + "]|"
-            + classAndMethod + "|"
-            + (!removeNewlinesFromMessages ? msg : msg.Replace("\r\n", " ").Replace("\n", " ")); //currently just a string
-
+          var dt = DateTime.UtcNow;
+          var dts = dt.ToString("yyyy-MM-dd HH") + ":" + dt.ToString("mm") + ":" + dt.ToString("ss") + "." + dt.ToString("fff");
+          //var s = Severity.Info;
+          //switch (hsc) {
+          //  case HttpStatusCode.OK:
+          //    s = Severity.info;
+          //    break;
+          //  default:
+          //    s = Severity.error;
+          //    break;
+          //}
+          var ss = "[" + severity.ToString().ToUpper() + "]";
+          o = o ?? "";
+          //var msg = o.ToString(); //json convert instead?
+          msg = !removeNewlinesFromMessage
+            ? msg
+            : msg.Replace("\r\n", " ").Replace("\n", " ")
+          ; //currently just a string
+            //var whereIAm = WhereAmI.Execute(stepUp: 3);
+            //this is for cloud watch logs which requires space after timestamp: http://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/send_logs_to_cwl.html
+          var space = " ";
+          var log = $"{dts}{space}|{ss}|{nameSpace}|{className}|{method}|{msg}";
           Instance.al.Enqueue(log);
 
           if (fireEmailAsWell && Instance.emailSettingsAppearValid) {
